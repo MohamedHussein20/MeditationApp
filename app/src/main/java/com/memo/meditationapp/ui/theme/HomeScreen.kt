@@ -1,6 +1,7 @@
 package com.memo.meditationapp.ui.theme
 
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -9,15 +10,24 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.lazy.LazyRow
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import com.memo.meditationapp.R
+import com.plcoding.meditationuiyoutube.ui.theme.ButtonBlue
+import com.plcoding.meditationuiyoutube.ui.theme.DarkerButtonBlue
 import com.plcoding.meditationuiyoutube.ui.theme.DeepBlue
 import com.plcoding.meditationuiyoutube.ui.theme.TextWhite
 
@@ -28,13 +38,13 @@ fun HomeScreen() {
             .background(DeepBlue)
             .fillMaxSize()
     ) {
-        Column (
-            modifier = Modifier.padding(15.dp)
-        ){//The biggest column
+        Column {
             GreetingSection(name = "Mohamed")
+            ChipSection(chipList = listOf("Sweet Sleep", "Insomnia", "Depression"))
         }
     }
 }
+
 @Composable
 fun GreetingSection(name: String) {
     Row(
@@ -49,11 +59,13 @@ fun GreetingSection(name: String) {
         ) {
             Text(
                 text = "Good Morning $name",
-                style = MaterialTheme.typography.headlineLarge
+                style = MaterialTheme.typography.headlineLarge,
+                modifier = Modifier.padding(4.dp)
             )
             Text(
                 text = "We wish you have a good day!",
-                style = MaterialTheme.typography.bodyLarge
+                style = MaterialTheme.typography.bodyLarge,
+                modifier = Modifier.padding(4.dp)
             )
         }
         Icon(
@@ -62,5 +74,33 @@ fun GreetingSection(name: String) {
             modifier = Modifier.size(24.dp),
             contentDescription = "Search"
         )
+    }
+}
+
+@Composable
+fun ChipSection(chipList: List<String>) {
+    var selectedChipIndex by remember {
+        mutableStateOf(0)
+    }
+    LazyRow {
+        items(chipList.size) {
+            Box(
+                contentAlignment = Alignment.Center,
+                modifier = Modifier
+                .padding(start = 15.dp, top = 15.dp, bottom = 15.dp)
+                .clickable {
+                    selectedChipIndex = it
+                }
+                .clip(RoundedCornerShape(10.dp))
+                .background(
+                    if (selectedChipIndex == it) ButtonBlue
+                    else DarkerButtonBlue
+                )
+                .padding(15.dp)
+            )
+            {
+                Text(text = chipList[it], color = TextWhite)
+            }
+        }
     }
 }
