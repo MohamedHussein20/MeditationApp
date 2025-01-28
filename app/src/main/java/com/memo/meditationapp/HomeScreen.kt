@@ -23,7 +23,7 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
@@ -35,6 +35,8 @@ import androidx.compose.ui.graphics.Path
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.compose.foundation.Canvas
+import com.plcoding.meditationuiyoutube.ui.theme.AquaBlue
 import com.plcoding.meditationuiyoutube.ui.theme.Beige1
 import com.plcoding.meditationuiyoutube.ui.theme.Beige2
 import com.plcoding.meditationuiyoutube.ui.theme.Beige3
@@ -61,8 +63,8 @@ fun HomeScreen() {
             .fillMaxSize()
     ) {
         Column {
-            GreetingSection(name = "Mohamed")
-            ChipSection(chipList = listOf("Sweet Sleep", "Insomnia", "Depression"))
+            GreetingSection(name= "Mohamed")
+            ChipSection(chipList = listOf("Sweet sleep", "Insomnia", "Depression"))
             CurrentMeditation()
             FeatureSection(
                 features = listOf(
@@ -97,8 +99,18 @@ fun HomeScreen() {
                 )
             )
         }
+        BottomMenu(items = listOf(
+            BottomMenuContent("Home", R.drawable.ic_home),
+            BottomMenuContent("Meditate", R.drawable.ic_bubble),
+            BottomMenuContent("Sleep", R.drawable.ic_moon),
+            BottomMenuContent("Music", R.drawable.ic_music),
+            BottomMenuContent("Profile", R.drawable.ic_profile),
+        ), modifier = Modifier.align(Alignment.BottomCenter))
     }
 }
+
+
+
 
 @Composable
 fun GreetingSection(name: String) {
@@ -135,7 +147,7 @@ fun GreetingSection(name: String) {
 @Composable
 fun ChipSection(chipList: List<String>) {
     var selectedChipIndex by remember {
-        mutableStateOf(0)
+        mutableIntStateOf(0)
     }
     LazyRow {
         items(chipList.size) {
@@ -287,7 +299,7 @@ fun FeatureItem(feature: Feature) {
             close()
         }
 
-        androidx.compose.foundation.Canvas(
+        Canvas(
             modifier = Modifier
                 .fillMaxSize()
                 .padding(15.dp)
@@ -335,3 +347,76 @@ fun FeatureItem(feature: Feature) {
         }
     }
 }
+
+
+@Composable
+fun BottomMenu(
+    items: List<BottomMenuContent>,
+    modifier: Modifier = Modifier,
+    activeHighlightColor: Color = ButtonBlue,
+    activeTextColor: Color = Color.White,
+    inactiveTextColor: Color = AquaBlue,
+    initialSelectedItemIndex: Int = 0
+) {
+    var selectedItemIndex by remember {
+        mutableIntStateOf(initialSelectedItemIndex)
+    }
+    Row(
+        horizontalArrangement = Arrangement.SpaceAround,
+        verticalAlignment = Alignment.CenterVertically,
+        modifier = modifier
+            .fillMaxWidth()
+            .background(DeepBlue)
+            .padding(15.dp)
+    ) {
+        items.forEachIndexed { index, item ->
+            BottomMenuItem(
+                item = item,
+                isSelected = index == selectedItemIndex,
+                activeHighlightColor = activeHighlightColor,
+                activeTextColor = activeTextColor,
+                inactiveTextColor = inactiveTextColor
+            ) {
+                selectedItemIndex = index
+            }
+        }
+    }
+}
+
+@Composable
+fun BottomMenuItem(
+    item: BottomMenuContent,
+    isSelected: Boolean = false,
+    activeHighlightColor: Color = ButtonBlue,
+    activeTextColor: Color = Color.White,
+    inactiveTextColor: Color = AquaBlue,
+    onItemClick: () -> Unit
+) {
+    Column(
+        horizontalAlignment = Alignment.CenterHorizontally,
+        verticalArrangement = Arrangement.Center,
+        modifier = Modifier.clickable {
+            onItemClick()
+        }
+    ) {
+        Box(
+            contentAlignment = Alignment.Center,
+            modifier = Modifier
+                .clip(RoundedCornerShape(10.dp))
+                .background(if (isSelected) activeHighlightColor else Color.Transparent)
+                .padding(10.dp)
+        ) {
+            Icon(
+                painter = painterResource(id = item.iconId),
+                contentDescription = item.title,
+                tint = if (isSelected) activeTextColor else inactiveTextColor,
+                modifier = Modifier.size(20.dp)
+            )
+        }
+        Text(
+            text = item.title,
+            color = if(isSelected) activeTextColor else inactiveTextColor
+        )
+    }
+}
+
